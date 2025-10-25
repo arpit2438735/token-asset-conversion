@@ -42,9 +42,27 @@
   pointer-events: none;
 }
 
-.usd-input {
+.token-icon-left {
+  position: absolute;
+  left: 1rem;
+  width: 32px;
+  height: 32px;
+  pointer-events: none;
+  border-radius: 50%;
+}
+
+.token-icon-right {
+  position: absolute;
+  right: 1.25rem;
+  width: 32px;
+  height: 32px;
+  pointer-events: none;
+  border-radius: 50%;
+}
+
+.amount-input {
   width: 100%;
-  padding: 1rem 1rem 1rem 2.5rem;
+  padding: 1rem 1rem 1rem 3.5rem;
   font-size: 1.5rem;
   font-weight: 600;
   background: #252540;
@@ -55,35 +73,69 @@
   outline: none;
 }
 
-.usd-input:focus {
+.amount-input:focus {
   border-color: #4a90e2;
   background: #0f0f1e;
   box-shadow: 0 0 0 4px rgba(74, 144, 226, 0.1);
 }
 
-.usd-input:disabled {
+.amount-input:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
 
-.usd-input::placeholder {
+.amount-input::placeholder {
   color: #b0b0c8;
   opacity: 0.5;
 }
 
 /* Remove number input arrows */
-.usd-input::-webkit-outer-spin-button,
-.usd-input::-webkit-inner-spin-button {
+.amount-input::-webkit-outer-spin-button,
+.amount-input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
-.usd-input[type=number] {
+.amount-input[type=number] {
   -moz-appearance: textfield;
 }
 
+.button-group {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.switch-button {
+  flex: 1;
+  padding: 1rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #ffffff;
+  background: #252540;
+  border: 2px solid #4a90e2;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.switch-button:hover:not(:disabled) {
+  background: #4a90e2;
+  transform: translateY(-2px);
+}
+
+.switch-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.switch-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
 .convert-button {
-  width: 100%;
+  flex: 2;
   padding: 1rem 2rem;
   font-size: 1.125rem;
   font-weight: 600;
@@ -146,18 +198,12 @@
   margin-bottom: 1.5rem;
 }
 
-.result-card h3 {
-  font-size: 1.125rem;
-  color: #b0b0c8;
-  margin-bottom: 0.75rem;
-  font-weight: 500;
-}
-
-.wbtc-amount {
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: #f7931a;
+.conversion-result {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #ffffff;
   margin: 0;
+  line-height: 1.5;
 }
 
 .price-info {
@@ -234,15 +280,24 @@
     padding: 1.5rem;
   }
 
-  .wbtc-amount {
-    font-size: 2rem;
+  .conversion-result {
+    font-size: 1.25rem;
+  }
+
+  .button-group {
+    flex-direction: column;
+  }
+
+  .switch-button,
+  .convert-button {
+    flex: 1;
   }
 
   .technical-note {
     padding: 1.5rem;
   }
 
-  .usd-input {
+  .amount-input {
     font-size: 1.25rem;
   }
 }

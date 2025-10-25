@@ -5,12 +5,13 @@ const COINGECKO_API = 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin
 const WBTC_CONTRACT_ADDRESS = '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599'
 
 function ConversionInput() {
-  const [usdAmount, setUsdAmount] = useState('')
-  const [wbtcAmount, setWbtcAmount] = useState(null)
+  const [inputAmount, setInputAmount] = useState('')
+  const [convertedAmount, setConvertedAmount] = useState(null)
   const [btcPrice, setBtcPrice] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [lastUpdated, setLastUpdated] = useState(null)
+  const [inputCurrency, setInputCurrency] = useState('USD') // 'USD' or 'wBTC'
 
   // Fetch Bitcoin price on component mount
   useEffect(() => {
@@ -41,9 +42,9 @@ function ConversionInput() {
 
   const handleConvert = async () => {
     // Validate input
-    const amount = parseFloat(usdAmount)
+    const amount = parseFloat(inputAmount)
     if (isNaN(amount) || amount <= 0) {
-      setError('Please enter a valid USD amount greater than 0')
+      setError(`Please enter a valid ${inputCurrency} amount greater than 0`)
       return
     }
 
@@ -63,10 +64,17 @@ function ConversionInput() {
         throw new Error('Unable to get Bitcoin price')
       }
 
-      // Calculate wBTC amount (wBTC has 1:1 value with BTC)
-      // Formula: USD amount / BTC price in USD = BTC amount = wBTC amount
-      const calculatedWbtc = amount / currentPrice
-      setWbtcAmount(calculatedWbtc)
+      // Calculate conversion based on input currency
+      let result
+      if (inputCurrency === 'USD') {
+        // USD to wBTC: USD amount / BTC price in USD = wBTC amount
+        result = amount / currentPrice
+      } else {
+        // wBTC to USD: wBTC amount * BTC price in USD = USD amount
+        result = amount * currentPrice
+      }
+      
+      setConvertedAmount(result)
     } catch (err) {
       setError('Conversion failed. Please try again.')
       console.error('Error during conversion:', err)
@@ -75,8 +83,15 @@ function ConversionInput() {
     }
   }
 
+  const handleSwitchCurrencies = () => {
+    setInputCurrency(prev => prev === 'USD' ? 'wBTC' : 'USD')
+    setInputAmount('')
+    setConvertedAmount(null)
+    setError(null)
+  }
+
   const handleInputChange = (e) => {
-    setUsdAmount(e.target.value)
+    setInputAmount(e.target.value)
     setError(null)
   }
 
@@ -86,49 +101,88 @@ function ConversionInput() {
     }
   }
 
-  const formatWbtcAmount = (amount) => {
+  const formatAmount = (amount, currency) => {
     if (amount === null) return null
     
-    // Format with appropriate decimal places
-    if (amount < 0.00000001) {
-      return amount.toExponential(8)
-    } else if (amount < 0.0001) {
-      return amount.toFixed(8)
+    if (currency === 'wBTC') {
+      // Format wBTC with appropriate decimal places
+      if (amount < 0.00000001) {
+        return amount.toExponential(8)
+      } else if (amount < 0.0001) {
+        return amount.toFixed(8)
+      } else {
+        return amount.toFixed(6)
+      }
     } else {
-      return amount.toFixed(6)
+      // Format USD with 2 decimal places
+      return amount.toLocaleString('en-US', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      })
     }
+  }
+
+  const getOutputCurrency = () => {
+    return inputCurrency === 'USD' ? 'wBTC' : 'USD'
+  }
+
+  const getOutputLabel = () => {
+    return inputCurrency === 'USD' ? 'Amount of wBTC' : 'Amount of USD'
+  }
+
+  const getOutputUnit = () => {
+    return inputCurrency === 'USD' ? 'tokens' : ''
   }
 
   return (
     <div className="conversion-container">
       <div className="conversion-card">
         <div className="input-section">
-          <label htmlFor="usd-input" className="input-label">
-            Enter USD Amount
+          <label htmlFor="amount-input" className="input-label">
+            Enter {inputCurrency} Amount
           </label>
           <div className="input-wrapper">
-            <span className="currency-symbol">$</span>
+            {inputCurrency === 'USD' ? (
+              <span className="currency-symbol">$</span>
+            ) : (
+              <img 
+                src="https://assets.coingecko.com/coins/images/7598/standard/wrapped_bitcoin_wbtc.png?1696507857" 
+                alt="wBTC token" 
+                className="token-icon-left"
+              />
+            )}
             <input
-              id="usd-input"
+              id="amount-input"
               type="number"
               min="0"
-              step="0.01"
-              value={usdAmount}
+              step={inputCurrency === 'USD' ? '0.01' : '0.00000001'}
+              value={inputAmount}
               onChange={handleInputChange}
-              placeholder="0.00"
-              className="usd-input"
+              onKeyPress={handleKeyPress}
+              placeholder={inputCurrency === 'USD' ? '0.00' : '0.00000000'}
+              className="amount-input"
               disabled={loading}
             />
           </div>
         </div>
 
-        <button
-          onClick={handleConvert}
-          disabled={loading || !usdAmount}
-          className="convert-button"
-        >
-          {loading ? 'Converting...' : 'Convert to wBTC'}
-        </button>
+        <div className="button-group">
+          <button
+            onClick={handleSwitchCurrencies}
+            className="switch-button"
+            disabled={loading}
+          >
+            ⇄ Switch Currencies
+          </button>
+          
+          <button
+            onClick={handleConvert}
+            disabled={loading || !inputAmount}
+            className="convert-button"
+          >
+            {loading ? 'Converting...' : `Convert to ${getOutputCurrency()}`}
+          </button>
+        </div>
 
         {error && (
           <div className="error-message">
@@ -136,12 +190,11 @@ function ConversionInput() {
           </div>
         )}
 
-        {wbtcAmount !== null && !error && (
+        {convertedAmount !== null && !error && (
           <div className="result-section">
             <div className="result-card">
-              <h3>Amount of wBTC:</h3>
-              <p className="wbtc-amount">
-                {formatWbtcAmount(wbtcAmount)} tokens
+              <p className="conversion-result">
+                {getOutputLabel()}: {inputCurrency === 'USD' ? '' : '$'}{formatAmount(convertedAmount, getOutputCurrency())} {getOutputUnit()}
               </p>
             </div>
             
