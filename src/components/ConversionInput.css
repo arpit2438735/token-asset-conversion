@@ -1,0 +1,249 @@
+.conversion-container {
+  width: 100%;
+}
+
+.conversion-card {
+  background: #1a1a2e;
+  border-radius: 20px;
+  padding: 2.5rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.conversion-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+}
+
+.input-section {
+  margin-bottom: 2rem;
+}
+
+.input-label {
+  display: block;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: #ffffff;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.currency-symbol {
+  position: absolute;
+  left: 1.25rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #b0b0c8;
+  pointer-events: none;
+}
+
+.usd-input {
+  width: 100%;
+  padding: 1rem 1rem 1rem 2.5rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+  background: #252540;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  color: #ffffff;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.usd-input:focus {
+  border-color: #4a90e2;
+  background: #0f0f1e;
+  box-shadow: 0 0 0 4px rgba(74, 144, 226, 0.1);
+}
+
+.usd-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.usd-input::placeholder {
+  color: #b0b0c8;
+  opacity: 0.5;
+}
+
+/* Remove number input arrows */
+.usd-input::-webkit-outer-spin-button,
+.usd-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.usd-input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.convert-button {
+  width: 100%;
+  padding: 1rem 2rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: white;
+  background: #4a90e2;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+}
+
+.convert-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(74, 144, 226, 0.4);
+}
+
+.convert-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.convert-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.error-message {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: rgba(239, 83, 80, 0.1);
+  border-left: 4px solid #ef5350;
+  border-radius: 8px;
+  color: #ef5350;
+  font-size: 0.95rem;
+}
+
+.result-section {
+  margin-top: 2rem;
+  animation: fadeInUp 0.5s ease;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.result-card {
+  background: #252540;
+  border: 2px solid #4a90e2;
+  border-radius: 16px;
+  padding: 2rem;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.result-card h3 {
+  font-size: 1.125rem;
+  color: #b0b0c8;
+  margin-bottom: 0.75rem;
+  font-weight: 500;
+}
+
+.wbtc-amount {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #f7931a;
+  margin: 0;
+}
+
+.price-info {
+  text-align: center;
+  padding: 1rem;
+  background: #252540;
+  border-radius: 12px;
+}
+
+.price-info p {
+  margin: 0.25rem 0;
+  color: #b0b0c8;
+  font-size: 0.95rem;
+}
+
+.last-updated {
+  font-size: 0.85rem !important;
+  opacity: 0.7;
+}
+
+.technical-note {
+  margin-top: 3rem;
+  padding: 2rem;
+  background: #1a1a2e;
+  border-radius: 16px;
+  border: 1px solid #252540;
+}
+
+.technical-note h4 {
+  color: #4a90e2;
+  margin-bottom: 1rem;
+  font-size: 1.25rem;
+}
+
+.technical-note p {
+  color: #b0b0c8;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.contract-address {
+  display: block;
+  margin: 1rem 0;
+  padding: 1rem;
+  background: #252540;
+  border-radius: 8px;
+  word-break: break-all;
+  font-size: 0.85rem;
+  color: #f7931a;
+}
+
+.technical-note ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.technical-note li {
+  padding: 0.5rem 0 0.5rem 1.5rem;
+  color: #b0b0c8;
+  position: relative;
+  line-height: 1.5;
+}
+
+.technical-note li:before {
+  content: "→";
+  position: absolute;
+  left: 0;
+  color: #4a90e2;
+  font-weight: bold;
+}
+
+@media (max-width: 768px) {
+  .conversion-card {
+    padding: 1.5rem;
+  }
+
+  .wbtc-amount {
+    font-size: 2rem;
+  }
+
+  .technical-note {
+    padding: 1.5rem;
+  }
+
+  .usd-input {
+    font-size: 1.25rem;
+  }
+}
+
