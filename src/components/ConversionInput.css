@@ -16,7 +16,14 @@
 }
 
 .input-section {
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.precision-hint {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: #b0b0c8;
+  opacity: 0.8;
 }
 
 .input-label {

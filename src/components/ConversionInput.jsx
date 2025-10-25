@@ -48,6 +48,16 @@ function ConversionInput() {
       return
     }
 
+    // Validate decimal precision
+    if (inputAmount.includes('.')) {
+      const [, decimal] = inputAmount.split('.')
+      const maxDecimals = inputCurrency === 'USD' ? 2 : 8
+      if (decimal && decimal.length > maxDecimals) {
+        setError(`${inputCurrency} allows a maximum of ${maxDecimals} decimal places`)
+        return
+      }
+    }
+
     setLoading(true)
     setError(null)
 
@@ -91,7 +101,20 @@ function ConversionInput() {
   }
 
   const handleInputChange = (e) => {
-    setInputAmount(e.target.value)
+    const value = e.target.value
+    
+    // Enforce decimal precision limits
+    if (value.includes('.')) {
+      const [, decimal] = value.split('.')
+      const maxDecimals = inputCurrency === 'USD' ? 2 : 8
+      
+      // If decimal places exceed the limit, don't update the value
+      if (decimal && decimal.length > maxDecimals) {
+        return
+      }
+    }
+    
+    setInputAmount(value)
     setError(null)
   }
 
@@ -164,6 +187,9 @@ function ConversionInput() {
               disabled={loading}
             />
           </div>
+          <p className="precision-hint">
+            Maximum {inputCurrency === 'USD' ? '2' : '8'} decimal places
+          </p>
         </div>
 
         <div className="button-group">
