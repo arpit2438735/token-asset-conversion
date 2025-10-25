@@ -2,6 +2,91 @@
   width: 100%;
 }
 
+/* Wallet Status Card */
+.wallet-status-card {
+  background: #1a1a2e;
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  border: 2px solid #252540;
+}
+
+.wallet-status-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.wallet-status-header h3 {
+  margin: 0;
+  font-size: 1.125rem;
+  color: #ffffff;
+}
+
+.status-badge {
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.status-badge.connected {
+  background: rgba(76, 175, 80, 0.2);
+  color: #4caf50;
+  border: 1px solid #4caf50;
+}
+
+.status-badge.disconnected {
+  background: rgba(176, 176, 200, 0.2);
+  color: #b0b0c8;
+  border: 1px solid #b0b0c8;
+}
+
+.wallet-status-details {
+  margin-top: 1rem;
+}
+
+.status-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.status-label {
+  color: #b0b0c8;
+  font-size: 0.95rem;
+}
+
+.network-badge {
+  padding: 0.3rem 0.7rem;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.network-badge.correct {
+  background: rgba(76, 175, 80, 0.15);
+  color: #4caf50;
+}
+
+.network-badge.incorrect {
+  background: rgba(239, 83, 80, 0.15);
+  color: #ef5350;
+}
+
+.wallet-note {
+  margin: 1rem 0 0 0;
+  padding: 1rem;
+  background: rgba(74, 144, 226, 0.1);
+  border-left: 3px solid #4a90e2;
+  border-radius: 8px;
+  color: #b0b0c8;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
 .conversion-card {
   background: #1a1a2e;
   border-radius: 20px;
@@ -172,12 +257,117 @@
 
 .error-message {
   margin-top: 1.5rem;
-  padding: 1rem;
+  padding: 1.25rem;
   background: rgba(239, 83, 80, 0.1);
   border-left: 4px solid #ef5350;
-  border-radius: 8px;
+  border-radius: 12px;
+  animation: fadeInDown 0.3s ease;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.error-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
   color: #ef5350;
+  font-size: 1rem;
+}
+
+.error-icon {
+  font-size: 1.25rem;
+}
+
+.error-text {
+  color: #ffffff;
+  margin: 0 0 1rem 0;
+  line-height: 1.5;
   font-size: 0.95rem;
+}
+
+.retry-button {
+  padding: 0.5rem 1rem;
+  background: #ef5350;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.retry-button:hover:not(:disabled) {
+  background: #e53935;
+  transform: translateY(-1px);
+}
+
+.retry-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Error type specific styling */
+.error-message.network {
+  border-left-color: #4a90e2;
+  background: rgba(74, 144, 226, 0.1);
+}
+
+.error-message.network .error-header {
+  color: #4a90e2;
+}
+
+.error-message.network .retry-button {
+  background: #4a90e2;
+}
+
+.error-message.network .retry-button:hover:not(:disabled) {
+  background: #3d7fc6;
+}
+
+.error-message.api_rate_limit {
+  border-left-color: #ffa726;
+  background: rgba(255, 167, 38, 0.1);
+}
+
+.error-message.api_rate_limit .error-header {
+  color: #ffa726;
+}
+
+.error-message.api_rate_limit .retry-button {
+  background: #ffa726;
+}
+
+.error-message.api_rate_limit .retry-button:hover:not(:disabled) {
+  background: #ff9800;
+}
+
+.error-message.validation {
+  border-left-color: #ffeb3b;
+  background: rgba(255, 235, 59, 0.1);
+}
+
+.error-message.validation .error-header {
+  color: #fdd835;
+}
+
+.error-message.validation .retry-button {
+  background: #fdd835;
+  color: #000000;
+}
+
+.error-message.validation .retry-button:hover:not(:disabled) {
+  background: #fbc02d;
 }
 
 .result-section {
@@ -283,6 +473,16 @@
 }
 
 @media (max-width: 768px) {
+  .wallet-status-card {
+    padding: 1.25rem;
+  }
+
+  .wallet-status-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
   .conversion-card {
     padding: 1.5rem;
   }
@@ -306,6 +506,14 @@
 
   .amount-input {
     font-size: 1.25rem;
+  }
+
+  .error-message {
+    padding: 1rem;
+  }
+
+  .error-text {
+    font-size: 0.9rem;
   }
 }
 

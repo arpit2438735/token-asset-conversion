@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import './ConversionInput.css'
+import { handleApiError, createValidationError, createConversionError } from '../utils/errorHandler'
 
 const COINGECKO_API = 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd'
 const WBTC_CONTRACT_ADDRESS = '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599'
@@ -12,6 +13,8 @@ function ConversionInput() {
   const [error, setError] = useState(null)
   const [lastUpdated, setLastUpdated] = useState(null)
   const [inputCurrency, setInputCurrency] = useState('USD') // 'USD' or 'wBTC'
+  const [walletConnected, setWalletConnected] = useState(false)
+  const [networkStatus, setNetworkStatus] = useState('mainnet') // 'mainnet', 'testnet', 'wrong'
 
   // Fetch Bitcoin price on component mount
   useEffect(() => {
@@ -24,18 +27,29 @@ function ConversionInput() {
       const response = await fetch(COINGECKO_API)
       
       if (!response.ok) {
-        throw new Error('Failed to fetch Bitcoin price')
+        if (response.status === 429) {
+          throw new Error('RATE_LIMIT')
+        } else if (response.status >= 500) {
+          throw new Error('SERVICE_UNAVAILABLE')
+        } else {
+          throw new Error('FETCH_FAILED')
+        }
       }
       
       const data = await response.json()
+      
+      if (!data.bitcoin || !data.bitcoin.usd) {
+        throw new Error('INVALID_RESPONSE')
+      }
+      
       const price = data.bitcoin.usd
       setBtcPrice(price)
       setLastUpdated(new Date())
       
       return price
     } catch (err) {
-      setError('Failed to fetch current Bitcoin price. Please try again.')
       console.error('Error fetching Bitcoin price:', err)
+      setError(handleApiError(err))
       return null
     }
   }
@@ -44,7 +58,7 @@ function ConversionInput() {
     // Validate input
     const amount = parseFloat(inputAmount)
     if (isNaN(amount) || amount <= 0) {
-      setError(`Please enter a valid ${inputCurrency} amount greater than 0`)
+      setError(createValidationError(`Please enter a valid ${inputCurrency} amount greater than 0`))
       return
     }
 
@@ -53,7 +67,7 @@ function ConversionInput() {
       const [, decimal] = inputAmount.split('.')
       const maxDecimals = inputCurrency === 'USD' ? 2 : 8
       if (decimal && decimal.length > maxDecimals) {
-        setError(`${inputCurrency} allows a maximum of ${maxDecimals} decimal places`)
+        setError(createValidationError(`${inputCurrency} allows a maximum of ${maxDecimals} decimal places`))
         return
       }
     }
@@ -86,7 +100,9 @@ function ConversionInput() {
       
       setConvertedAmount(result)
     } catch (err) {
-      setError('Conversion failed. Please try again.')
+      if (!error) { // Only set error if not already set by fetchBitcoinPrice
+        setError(createConversionError())
+      }
       console.error('Error during conversion:', err)
     } finally {
       setLoading(false)
@@ -159,6 +175,28 @@ function ConversionInput() {
 
   return (
     <div className="conversion-container">
+      {/* Web3 Wallet Status Indicator */}
+      <div className="wallet-status-card">
+        <div className="wallet-status-header">
+          <h3>🔗 Web3 Wallet Status</h3>
+          <span className={`status-badge ${walletConnected ? 'connected' : 'disconnected'}`}>
+            {walletConnected ? '✓ Connected' : '○ Not Connected'}
+          </span>
+        </div>
+        <div className="wallet-status-details">
+          <div className="status-item">
+            <span className="status-label">Network:</span>
+            <span className={`network-badge ${networkStatus === 'mainnet' ? 'correct' : 'incorrect'}`}>
+              {networkStatus === 'mainnet' ? '✓ Ethereum Mainnet' : '⚠ Wrong Network'}
+            </span>
+          </div>
+          <p className="wallet-note">
+            💡 <strong>Note:</strong> For actual wBTC transactions, you would need a Web3 wallet connected to Ethereum Mainnet. 
+            This demo shows price conversions only.
+          </p>
+        </div>
+      </div>
+
       <div className="conversion-card">
         <div className="input-section">
           <label htmlFor="amount-input" className="input-label">
@@ -211,8 +249,17 @@ function ConversionInput() {
         </div>
 
         {error && (
-          <div className="error-message">
-            {error}
+          <div className={`error-message ${error.type}`}>
+            <p className="error-text">{error.message}</p>
+            {error.recoverable && (
+              <button 
+                onClick={handleConvert} 
+                className="retry-button"
+                disabled={loading}
+              >
+                🔄 Retry
+              </button>
+            )}
           </div>
         )}
 
